@@ -1,0 +1,776 @@
+{
+  "particao": {
+    "treino_e_validacao": "2014/15 a 2024/25",
+    "jogos_desenvolvimento": 4180,
+    "temporada_teste": "2025/26",
+    "jogos_teste": 380,
+    "temporada_futura_parcial": "2026/27",
+    "jogos_futura": 100,
+    "temporadas_validacao_cruzada": [
+      "2018/19",
+      "2019/20",
+      "2020/21",
+      "2021/22",
+      "2022/23",
+      "2023/24",
+      "2024/25"
+    ],
+    "temporadas_agrupamento": [
+      "2014/15",
+      "2015/16",
+      "2016/17",
+      "2017/18"
+    ],
+    "distribuicao_resultado_teste": {
+      "H": 0.4263,
+      "A": 0.3,
+      "D": 0.2737
+    },
+    "distribuicao_resultado_desenvolvimento": {
+      "H": 0.4457,
+      "A": 0.3201,
+      "D": 0.2342
+    }
+  },
+  "agrupamento": {
+    "k_escolhido": 3,
+    "avaliacao_k": [
+      {
+        "k": 2,
+        "inercia": 19680.23315417802,
+        "silhueta": 0.29418581376204256
+      },
+      {
+        "k": 3,
+        "inercia": 17352.350985232675,
+        "silhueta": 0.17200758459488025
+      },
+      {
+        "k": 4,
+        "inercia": 15865.063038531633,
+        "silhueta": 0.16977966576939316
+      },
+      {
+        "k": 5,
+        "inercia": 14788.380495766474,
+        "silhueta": 0.16407511269493147
+      },
+      {
+        "k": 6,
+        "inercia": 13816.311468737016,
+        "silhueta": 0.14920920815552516
+      },
+      {
+        "k": 7,
+        "inercia": 13122.29280134326,
+        "silhueta": 0.14751224481895886
+      },
+      {
+        "k": 8,
+        "inercia": 12501.024346589096,
+        "silhueta": 0.14854341679405372
+      }
+    ],
+    "tamanho_por_cluster": {
+      "0": 1062,
+      "1": 656,
+      "2": 1192
+    },
+    "perfil_medio_por_cluster": {
+      "0": {
+        "gols_pro": 0.993,
+        "gols_contra": 1.61,
+        "chutes_pro": 10.474,
+        "chutes_contra": 14.987,
+        "no_alvo_pro": 3.313,
+        "no_alvo_contra": 5.078,
+        "escanteios_pro": 4.344,
+        "escanteios_contra": 6.126,
+        "faltas_pro": 11.065,
+        "amarelos_pro": 1.744,
+        "vermelhos_pro": 0.068
+      },
+      "1": {
+        "gols_pro": 2.017,
+        "gols_contra": 0.947,
+        "chutes_pro": 16.501,
+        "chutes_contra": 9.345,
+        "no_alvo_pro": 5.96,
+        "no_alvo_contra": 3.089,
+        "escanteios_pro": 6.52,
+        "escanteios_contra": 4.053,
+        "faltas_pro": 10.652,
+        "amarelos_pro": 1.605,
+        "vermelhos_pro": 0.043
+      },
+      "2": {
+        "gols_pro": 1.309,
+        "gols_contra": 1.304,
+        "chutes_pro": 12.714,
+        "chutes_contra": 12.482,
+        "no_alvo_pro": 4.169,
+        "no_alvo_contra": 4.106,
+        "escanteios_pro": 5.484,
+        "escanteios_contra": 5.211,
+        "faltas_pro": 11.107,
+        "amarelos_pro": 1.657,
+        "vermelhos_pro": 0.086
+      }
+    },
+    "variancia_explicada_pca": 0.925809795010932,
+    "componentes_pca": 7
+  },
+  "colunas": {
+    "base": [
+      "elo_casa",
+      "elo_fora",
+      "elo_diferenca",
+      "casa_forma_gols_pro",
+      "casa_forma_gols_contra",
+      "casa_forma_chutes_pro",
+      "casa_forma_chutes_contra",
+      "casa_forma_no_alvo_pro",
+      "casa_forma_no_alvo_contra",
+      "casa_forma_escanteios_pro",
+      "casa_forma_escanteios_contra",
+      "casa_forma_faltas_pro",
+      "casa_forma_amarelos_pro",
+      "casa_forma_vermelhos_pro",
+      "casa_forma_pontos",
+      "casa_pontos_por_jogo_temporada",
+      "casa_jogos_na_temporada",
+      "casa_descanso_dias",
+      "fora_forma_gols_pro",
+      "fora_forma_gols_contra",
+      "fora_forma_chutes_pro",
+      "fora_forma_chutes_contra",
+      "fora_forma_no_alvo_pro",
+      "fora_forma_no_alvo_contra",
+      "fora_forma_escanteios_pro",
+      "fora_forma_escanteios_contra",
+      "fora_forma_faltas_pro",
+      "fora_forma_amarelos_pro",
+      "fora_forma_vermelhos_pro",
+      "fora_forma_pontos",
+      "fora_pontos_por_jogo_temporada",
+      "fora_jogos_na_temporada",
+      "fora_descanso_dias"
+    ],
+    "cluster": [
+      "casa_cluster_sem_historico",
+      "casa_cluster_0",
+      "casa_cluster_1",
+      "casa_cluster_2",
+      "fora_cluster_sem_historico",
+      "fora_cluster_0",
+      "fora_cluster_1",
+      "fora_cluster_2"
+    ]
+  },
+  "classificacao": {
+    "Regressão Logística | sem K-Means": {
+      "melhores_parametros": {
+        "modelo__C": 0.003
+      },
+      "cv_por_temporada": [
+        0.913427701743839,
+        0.9893808120282831,
+        1.0295514872549176,
+        0.9694879448606435,
+        0.9750939890785107,
+        0.9286734278146068,
+        0.9938865862868839
+      ],
+      "cv_media": 0.9713574212953835,
+      "teste": {
+        "acuracia": 0.4868421052631579,
+        "f1_macro": 0.3622863247863248,
+        "recall_empate": 0.0,
+        "log_loss": 1.0366305871127786,
+        "auc_ovr": 0.6108931706051437,
+        "brier": 0.6229915299131843,
+        "rps": 0.21117074114970094
+      },
+      "futura": {
+        "acuracia": 0.42,
+        "f1_macro": 0.311998489568583,
+        "recall_empate": 0.0,
+        "log_loss": 1.0301864700636403,
+        "auc_ovr": 0.6008894834684657,
+        "brier": 0.6195182611854377,
+        "rps": 0.21211668789252422
+      }
+    },
+    "Árvore de Decisão | sem K-Means": {
+      "melhores_parametros": {
+        "modelo__max_depth": 2,
+        "modelo__min_samples_leaf": 5
+      },
+      "cv_por_temporada": [
+        0.9290132062271376,
+        1.0005289559418007,
+        1.0475858461179854,
+        0.9840582214955125,
+        0.9740858142081151,
+        0.9589757445962345,
+        1.0006565726157095
+      ],
+      "cv_media": 0.9849863373146421,
+      "teste": {
+        "acuracia": 0.4921052631578947,
+        "f1_macro": 0.35011695906432744,
+        "recall_empate": 0.0,
+        "log_loss": 1.0346335409724556,
+        "auc_ovr": 0.6050531375320239,
+        "brier": 0.6224374191508747,
+        "rps": 0.20995861596611318
+      },
+      "futura": {
+        "acuracia": 0.46,
+        "f1_macro": 0.33636856368563683,
+        "recall_empate": 0.0,
+        "log_loss": 1.026783651761916,
+        "auc_ovr": 0.6396252199999409,
+        "brier": 0.616578769034484,
+        "rps": 0.21329766187415136
+      }
+    },
+    "Random Forest | sem K-Means": {
+      "melhores_parametros": {
+        "modelo__max_depth": 12,
+        "modelo__max_features": 0.3,
+        "modelo__min_samples_leaf": 50
+      },
+      "cv_por_temporada": [
+        0.9217818385357995,
+        0.9878268070746159,
+        1.0384465601271093,
+        0.9698398403307968,
+        0.9692424227883619,
+        0.9342150198488074,
+        0.9942237293461164
+      ],
+      "cv_media": 0.9736537454359439,
+      "teste": {
+        "acuracia": 0.47368421052631576,
+        "f1_macro": 0.3532660879205725,
+        "recall_empate": 0.0,
+        "log_loss": 1.0371783902407272,
+        "auc_ovr": 0.6049959632408002,
+        "brier": 0.6240228647146849,
+        "rps": 0.2108268629241524
+      },
+      "futura": {
+        "acuracia": 0.44,
+        "f1_macro": 0.3305594082293111,
+        "recall_empate": 0.0,
+        "log_loss": 1.0317270009266581,
+        "auc_ovr": 0.5985033211287516,
+        "brier": 0.6191060411413138,
+        "rps": 0.21125814549732502
+      }
+    },
+    "XGBoost | sem K-Means": {
+      "melhores_parametros": {
+        "modelo__learning_rate": 0.01,
+        "modelo__max_depth": 1,
+        "modelo__n_estimators": 800
+      },
+      "cv_por_temporada": [
+        0.9088500142097473,
+        0.9814903140068054,
+        1.0434329509735107,
+        0.9739368557929993,
+        0.9769272804260254,
+        0.9460586309432983,
+        1.0031121969223022
+      ],
+      "cv_media": 0.9762583204678127,
+      "teste": {
+        "acuracia": 0.48157894736842105,
+        "f1_macro": 0.3560667204735002,
+        "recall_empate": 0.0,
+        "log_loss": 1.0374459028244019,
+        "auc_ovr": 0.6063042391930117,
+        "brier": 0.6241745128976066,
+        "rps": 0.21118316962289818
+      },
+      "futura": {
+        "acuracia": 0.48,
+        "f1_macro": 0.3623853211009174,
+        "recall_empate": 0.0,
+        "log_loss": 1.0277283191680908,
+        "auc_ovr": 0.6224542583550442,
+        "brier": 0.618095196517642,
+        "rps": 0.21189155817668653
+      }
+    },
+    "SVM (RBF) | sem K-Means": {
+      "melhores_parametros": {
+        "modelo__estimator__C": 0.01,
+        "modelo__estimator__gamma": 3e-05
+      },
+      "cv_por_temporada": [
+        0.9315478606865863,
+        1.015778231974215,
+        1.0228762829747529,
+        0.9758480013190034,
+        1.0002716823516906,
+        0.9469274990794763,
+        1.003085497106395
+      ],
+      "cv_media": 0.9851907222131598,
+      "teste": {
+        "acuracia": 0.4763157894736842,
+        "f1_macro": 0.360234907934554,
+        "recall_empate": 0.0,
+        "log_loss": 1.0442064332655159,
+        "auc_ovr": 0.6065616606040208,
+        "brier": 0.6305248680203007,
+        "rps": 0.21506080389642016
+      },
+      "futura": {
+        "acuracia": 0.43,
+        "f1_macro": 0.3238516063702476,
+        "recall_empate": 0.0,
+        "log_loss": 1.0613893068379205,
+        "auc_ovr": 0.6091812954261645,
+        "brier": 0.6381901553946675,
+        "rps": 0.22032389370740824
+      }
+    },
+    "Regressão Logística | com K-Means": {
+      "melhores_parametros": {
+        "modelo__C": 0.003
+      },
+      "cv_por_temporada": [
+        0.9119979450074146,
+        0.9887676870738356,
+        1.0332800089442364,
+        0.9732098898158664,
+        0.9730139472529434,
+        0.929252625044603,
+        0.9965586823249758
+      ],
+      "cv_media": 0.9722972550662679,
+      "teste": {
+        "acuracia": 0.4921052631578947,
+        "f1_macro": 0.3650544970603595,
+        "recall_empate": 0.0,
+        "log_loss": 1.0335795922482658,
+        "auc_ovr": 0.6133024777595065,
+        "brier": 0.6208612274340257,
+        "rps": 0.21017579740740644
+      },
+      "futura": {
+        "acuracia": 0.44,
+        "f1_macro": 0.3293195718654434,
+        "recall_empate": 0.0,
+        "log_loss": 1.0302486234481847,
+        "auc_ovr": 0.5947364981010442,
+        "brier": 0.6201011502614605,
+        "rps": 0.21205299220525092
+      }
+    },
+    "Árvore de Decisão | com K-Means": {
+      "melhores_parametros": {
+        "modelo__max_depth": 2,
+        "modelo__min_samples_leaf": 5
+      },
+      "cv_por_temporada": [
+        0.9290132062271376,
+        1.0005289559418007,
+        1.0475858461179854,
+        0.9840582214955125,
+        0.9740858142081151,
+        0.9589757445962345,
+        1.0006565726157095
+      ],
+      "cv_media": 0.9849863373146421,
+      "teste": {
+        "acuracia": 0.4921052631578947,
+        "f1_macro": 0.35011695906432744,
+        "recall_empate": 0.0,
+        "log_loss": 1.0346335409724556,
+        "auc_ovr": 0.6050531375320239,
+        "brier": 0.6224374191508747,
+        "rps": 0.20995861596611318
+      },
+      "futura": {
+        "acuracia": 0.46,
+        "f1_macro": 0.33636856368563683,
+        "recall_empate": 0.0,
+        "log_loss": 1.026783651761916,
+        "auc_ovr": 0.6396252199999409,
+        "brier": 0.616578769034484,
+        "rps": 0.21329766187415136
+      }
+    },
+    "Random Forest | com K-Means": {
+      "melhores_parametros": {
+        "modelo__max_depth": 12,
+        "modelo__max_features": 0.3,
+        "modelo__min_samples_leaf": 50
+      },
+      "cv_por_temporada": [
+        0.9194266822233744,
+        0.9844172951127946,
+        1.0376534203814736,
+        0.9706045100767884,
+        0.9718897636123186,
+        0.9352230555926494,
+        0.9941482512008704
+      ],
+      "cv_media": 0.9733375683143242,
+      "teste": {
+        "acuracia": 0.4710526315789474,
+        "f1_macro": 0.34992377365258714,
+        "recall_empate": 0.0,
+        "log_loss": 1.033726076170757,
+        "auc_ovr": 0.6072646263733795,
+        "brier": 0.6217604065314535,
+        "rps": 0.2099950311079184
+      },
+      "futura": {
+        "acuracia": 0.47,
+        "f1_macro": 0.3565589000371609,
+        "recall_empate": 0.0,
+        "log_loss": 1.0327666447526864,
+        "auc_ovr": 0.6005402030494874,
+        "brier": 0.6207573577881929,
+        "rps": 0.21231149699979354
+      }
+    },
+    "XGBoost | com K-Means": {
+      "melhores_parametros": {
+        "modelo__learning_rate": 0.01,
+        "modelo__max_depth": 2,
+        "modelo__n_estimators": 400
+      },
+      "cv_por_temporada": [
+        0.9121555685997009,
+        0.97809237241745,
+        1.0440878868103027,
+        0.9735927581787109,
+        0.9758671522140503,
+        0.9434763193130493,
+        1.00430166721344
+      ],
+      "cv_media": 0.9759391035352435,
+      "teste": {
+        "acuracia": 0.4763157894736842,
+        "f1_macro": 0.35152345179232586,
+        "recall_empate": 0.0,
+        "log_loss": 1.0369160175323486,
+        "auc_ovr": 0.6043861262082384,
+        "brier": 0.6238258473218035,
+        "rps": 0.21123282016443132
+      },
+      "futura": {
+        "acuracia": 0.47,
+        "f1_macro": 0.3519686544342508,
+        "recall_empate": 0.0,
+        "log_loss": 1.0255749225616455,
+        "auc_ovr": 0.6209966132206736,
+        "brier": 0.6167544820162862,
+        "rps": 0.2110409557055082
+      }
+    },
+    "SVM (RBF) | com K-Means": {
+      "melhores_parametros": {
+        "modelo__estimator__C": 0.03,
+        "modelo__estimator__gamma": 3e-05
+      },
+      "cv_por_temporada": [
+        0.9318601432290499,
+        1.0142485965349346,
+        1.0192529703106288,
+        0.9748257194392211,
+        1.0031624308013944,
+        0.9496339726565729,
+        1.0036396069168159
+      ],
+      "cv_media": 0.9852319199840881,
+      "teste": {
+        "acuracia": 0.46578947368421053,
+        "f1_macro": 0.3536133297664998,
+        "recall_empate": 0.0,
+        "log_loss": 1.0391872797755477,
+        "auc_ovr": 0.616304727790793,
+        "brier": 0.6272344297473018,
+        "rps": 0.2138390897655359
+      },
+      "futura": {
+        "acuracia": 0.43,
+        "f1_macro": 0.32670533001933166,
+        "recall_empate": 0.0,
+        "log_loss": 1.061494581334272,
+        "auc_ovr": 0.6030991528904304,
+        "brier": 0.637267344637872,
+        "rps": 0.2203196059041932
+      }
+    },
+    "Sempre mandante (frequências do treino)": {
+      "cv_por_temporada": [
+        1.0459322242760691,
+        1.064466367091133,
+        1.088995916134151,
+        1.069692841284654,
+        1.0506251634228192,
+        1.0541582793820072,
+        1.081202866156073
+      ],
+      "cv_media": 1.0650105225352724,
+      "teste": {
+        "acuracia": 0.4263157894736842,
+        "f1_macro": 0.1992619926199262,
+        "recall_empate": 0.0,
+        "log_loss": 1.0835184247317433,
+        "auc_ovr": 0.5,
+        "brier": 0.6556893157207938,
+        "rps": 0.22767499027036928
+      },
+      "futura": {
+        "acuracia": 0.42,
+        "f1_macro": 0.19718309859154928,
+        "recall_empate": 0.0,
+        "log_loss": 1.084458081769563,
+        "auc_ovr": 0.5,
+        "brier": 0.6566429797852611,
+        "rps": 0.2291310466793343
+      }
+    },
+    "Só Elo (Regressão Logística)": {
+      "cv_por_temporada": [
+        0.9117840678690778,
+        0.9795533541323123,
+        1.0406285055838251,
+        0.9588149488307098,
+        0.9731092967353857,
+        0.9331837740042299,
+        0.9880220288578125
+      ],
+      "cv_media": 0.9692994251447649,
+      "teste": {
+        "acuracia": 0.4789473684210526,
+        "f1_macro": 0.35577484216669314,
+        "recall_empate": 0.0,
+        "log_loss": 1.026245041276039,
+        "auc_ovr": 0.6121819102571373,
+        "brier": 0.6173742349436079,
+        "rps": 0.20877888573401607
+      },
+      "futura": {
+        "acuracia": 0.5,
+        "f1_macro": 0.37724434035909443,
+        "recall_empate": 0.0,
+        "log_loss": 1.0248200981837505,
+        "auc_ovr": 0.6519221959347676,
+        "brier": 0.6138005334225268,
+        "rps": 0.2095745892418683
+      }
+    },
+    "Odds Bet365 (referência)": {
+      "cv_por_temporada": [
+        0.8929010772547757,
+        0.9732089102123394,
+        1.0070132279723896,
+        0.9372433613219306,
+        0.9661582704386319,
+        0.9092124760895899,
+        0.9707576734366715
+      ],
+      "cv_media": 0.9509278566751898,
+      "teste": {
+        "acuracia": 0.48947368421052634,
+        "f1_macro": 0.3665394913641758,
+        "recall_empate": 0.0,
+        "log_loss": 1.018547433594444,
+        "auc_ovr": 0.6231476649570146,
+        "brier": 0.6115122077213379,
+        "rps": 0.20574653794193815
+      },
+      "futura": {
+        "acuracia": 0.47,
+        "f1_macro": 0.3565589000371609,
+        "recall_empate": 0.0,
+        "log_loss": 1.0116098141249728,
+        "auc_ovr": 0.669080923862945,
+        "brier": 0.6051269956133596,
+        "rps": 0.20569890604648958
+      }
+    }
+  },
+  "modelo_final_classificacao": "Regressão Logística | sem K-Means",
+  "comparacoes_bootstrap_log_loss_teste": {
+    "Só Elo (Regressão Logística)": {
+      "media": 0.010385545836739335,
+      "ic95_inferior": -0.003384136360200826,
+      "ic95_superior": 0.024175840940599817
+    },
+    "Odds Bet365 (referência)": {
+      "media": 0.018083153518334425,
+      "ic95_inferior": 0.001537555352846114,
+      "ic95_superior": 0.03503705442988869
+    },
+    "Regressão Logística | sem K-Means": {
+      "media": 0.0,
+      "ic95_inferior": 0.0,
+      "ic95_superior": 0.0
+    }
+  },
+  "regressao": {
+    "Regressão Linear Múltipla | sem K-Means": {
+      "melhores_parametros": {
+        "modelo__fit_intercept": true
+      },
+      "cv_rmse_media": 1.7280657756869375,
+      "teste": {
+        "mae": 1.2286468397732686,
+        "rmse": 1.5394101198717747,
+        "r2": 0.09422639294212898
+      },
+      "futura": {
+        "mae": 1.30415114238764,
+        "rmse": 1.6225452091561186,
+        "r2": 0.09874603548133476
+      }
+    },
+    "Ridge | sem K-Means": {
+      "melhores_parametros": {
+        "modelo__alpha": 300
+      },
+      "cv_rmse_media": 1.7256070594690274,
+      "teste": {
+        "mae": 1.2270278902747638,
+        "rmse": 1.5354617530507215,
+        "r2": 0.09886679387026731
+      },
+      "futura": {
+        "mae": 1.2966731348336538,
+        "rmse": 1.617037851861265,
+        "r2": 0.10485385151069959
+      }
+    },
+    "Random Forest | sem K-Means": {
+      "melhores_parametros": {
+        "modelo__max_depth": 4,
+        "modelo__min_samples_leaf": 5
+      },
+      "cv_rmse_media": 1.7352167038007802,
+      "teste": {
+        "mae": 1.232476263321757,
+        "rmse": 1.525774402083054,
+        "r2": 0.11020156761763789
+      },
+      "futura": {
+        "mae": 1.2862412438057185,
+        "rmse": 1.621816566641344,
+        "r2": 0.09955531278206231
+      }
+    },
+    "SVR (RBF) | sem K-Means": {
+      "melhores_parametros": {
+        "modelo__C": 10.0,
+        "modelo__gamma": 0.0003
+      },
+      "cv_rmse_media": 1.7228328218542406,
+      "teste": {
+        "mae": 1.2246956317708413,
+        "rmse": 1.5316623249285979,
+        "r2": 0.10332090004828065
+      },
+      "futura": {
+        "mae": 1.2956459736719688,
+        "rmse": 1.6263560409519677,
+        "r2": 0.09450755813188205
+      }
+    },
+    "Regressão Linear Múltipla | com K-Means": {
+      "melhores_parametros": {
+        "modelo__fit_intercept": true
+      },
+      "cv_rmse_media": 1.7302991872255902,
+      "teste": {
+        "mae": 1.2284662943252882,
+        "rmse": 1.537106044240144,
+        "r2": 0.09693575421856848
+      },
+      "futura": {
+        "mae": 1.3047255847502017,
+        "rmse": 1.622572147414063,
+        "r2": 0.09871610914933238
+      }
+    },
+    "Ridge | com K-Means": {
+      "melhores_parametros": {
+        "modelo__alpha": 300
+      },
+      "cv_rmse_media": 1.7278731781359704,
+      "teste": {
+        "mae": 1.2247651233030077,
+        "rmse": 1.5306801254374198,
+        "r2": 0.10447054687998447
+      },
+      "futura": {
+        "mae": 1.2971806304866071,
+        "rmse": 1.6171713839099309,
+        "r2": 0.10470600632050875
+      }
+    },
+    "Random Forest | com K-Means": {
+      "melhores_parametros": {
+        "modelo__max_depth": 4,
+        "modelo__min_samples_leaf": 5
+      },
+      "cv_rmse_media": 1.7352728811812879,
+      "teste": {
+        "mae": 1.2325400383904608,
+        "rmse": 1.525687280997149,
+        "r2": 0.11030317895988373
+      },
+      "futura": {
+        "mae": 1.2867095856935589,
+        "rmse": 1.6222370979176508,
+        "r2": 0.0990882880215389
+      }
+    },
+    "SVR (RBF) | com K-Means": {
+      "melhores_parametros": {
+        "modelo__C": 10.0,
+        "modelo__gamma": 0.0003
+      },
+      "cv_rmse_media": 1.7266688564500043,
+      "teste": {
+        "mae": 1.2203675102944058,
+        "rmse": 1.5249010788809292,
+        "r2": 0.11121988228073731
+      },
+      "futura": {
+        "mae": 1.2909100547680976,
+        "rmse": 1.618833188176793,
+        "r2": 0.10286505386921319
+      }
+    },
+    "Média do treino (referência)": {
+      "teste": {
+        "mae": 1.2917778897003274,
+        "rmse": 1.617614031914419,
+        "r2": -0.00014000334039221407
+      },
+      "futura": {
+        "mae": 1.3553588516746413,
+        "rmse": 1.7097552215202108,
+        "r2": -0.000740446241356274
+      }
+    }
+  },
+  "modelo_final_regressao": "SVR (RBF) | sem K-Means",
+  "versoes": {
+    "pandas": "3.1.1",
+    "numpy": "2.5.4",
+    "scikit_learn": "1.9.1",
+    "xgboost": "3.4.1"
+  },
+  "segundos": 155.8
+}
