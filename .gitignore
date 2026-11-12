@@ -1,0 +1,7 @@
+.venv/
+__pycache__/
+.ipynb_checkpoints/
+build_notebook.py
+build_report.py
+plots.py
+EXPLICACAO-*.docx
