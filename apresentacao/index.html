@@ -1,0 +1,662 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Previsão de resultados da Premier League</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+    --paper: #ffffff;
+    --ink: #14202b;
+    --muted: #5b6773;
+    --rule: #d9dee3;
+    --tint: #eef3f8;
+    --accent: #1f4e79;
+    --accent-soft: #9db6cf;
+    --font-sans: 'IBM Plex Sans', sans-serif;
+    --font-mono: 'IBM Plex Mono', monospace;
+    --ease: cubic-bezier(0.16, 1, 0.3, 1);
+    --stage-bg: #e8ebee;
+    --slide-bg: var(--paper);
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+html,
+body {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    overflow: hidden;
+    background: var(--stage-bg, #000);
+}
+
+.deck-viewport {
+    position: fixed;
+    inset: 0;
+    overflow: hidden;
+    background: var(--stage-bg, #000);
+}
+
+.deck-stage {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 1920px;
+    height: 1080px;
+    overflow: hidden;
+    transform-origin: 0 0;
+    background: var(--slide-bg, #fff);
+}
+
+.slide {
+    position: absolute;
+    inset: 0;
+    width: 1920px;
+    height: 1080px;
+    overflow: hidden;
+    display: block;
+    visibility: hidden;
+    opacity: 0;
+    pointer-events: none;
+    background: var(--slide-bg, #fff);
+}
+
+.slide.active,
+.slide.visible {
+    visibility: visible;
+    opacity: 1;
+    pointer-events: auto;
+    z-index: 1;
+}
+
+img, video, canvas, svg { max-width: 100%; max-height: 100%; }
+
+@media print {
+    html, body { width: 1920px; height: auto; overflow: visible; background: #fff; }
+    .deck-viewport { position: static; overflow: visible; background: #fff; }
+    .deck-stage { position: static; width: auto; height: auto; transform: none !important; background: none; }
+    .slide {
+        position: relative;
+        display: block !important;
+        visibility: visible !important;
+        opacity: 1 !important;
+        pointer-events: auto !important;
+        width: 1920px;
+        height: 1080px;
+        break-after: page;
+        page-break-after: always;
+    }
+    .slide:last-child { break-after: auto; page-break-after: auto; }
+    .reveal { opacity: 1 !important; transform: none !important; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.2s !important; }
+}
+
+body { font-family: var(--font-sans); color: var(--ink); -webkit-font-smoothing: antialiased; }
+
+.reveal {
+    opacity: 0;
+    transform: translateY(18px);
+    transition: opacity 0.6s var(--ease), transform 0.6s var(--ease);
+    transition-delay: calc(var(--d, 0) * 80ms);
+}
+.slide.visible .reveal { opacity: 1; transform: none; }
+
+.slide-head {
+    position: absolute;
+    left: 112px;
+    right: 112px;
+    top: 72px;
+}
+.kicker {
+    font-family: var(--font-mono);
+    font-size: 22px;
+    letter-spacing: 0.04em;
+    color: var(--accent);
+    text-transform: uppercase;
+}
+h2 {
+    margin-top: 18px;
+    font-size: 56px;
+    font-weight: 600;
+    line-height: 1.06;
+    letter-spacing: -0.025em;
+    max-width: 1696px;
+}
+.slide-body {
+    position: absolute;
+    left: 112px;
+    right: 112px;
+    top: 250px;
+    bottom: 120px;
+}
+.slide-foot {
+    position: absolute;
+    left: 112px;
+    right: 112px;
+    bottom: 44px;
+    padding-top: 18px;
+    border-top: 1px solid var(--rule);
+    display: flex;
+    justify-content: space-between;
+    font-family: var(--font-mono);
+    font-size: 20px;
+    color: var(--muted);
+}
+
+.lead { font-size: 34px; line-height: 1.38; color: var(--ink); }
+.small { font-size: 26px; line-height: 1.4; color: var(--muted); }
+.mono { font-family: var(--font-mono); }
+.num { font-family: var(--font-mono); font-weight: 500; letter-spacing: -0.02em; }
+
+.fig {
+    display: block;
+    border: 1px solid var(--rule);
+    background: #fff;
+}
+
+.stat { padding: 26px 0; border-top: 1px solid var(--rule); }
+.stat .num { font-size: 84px; line-height: 1; color: var(--accent); }
+.stat .label { margin-top: 10px; font-size: 26px; color: var(--muted); line-height: 1.3; }
+
+.list { list-style: none; }
+.list li {
+    padding: 20px 0 20px 40px;
+    border-top: 1px solid var(--rule);
+    font-size: 30px;
+    line-height: 1.35;
+    position: relative;
+}
+.list li::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 38px;
+    width: 18px;
+    height: 4px;
+    background: var(--accent);
+}
+.list li:last-child { border-bottom: 1px solid var(--rule); }
+
+table { border-collapse: collapse; width: 100%; }
+th, td { text-align: left; padding: 18px 20px; border-bottom: 1px solid var(--rule); font-size: 28px; }
+th { font-family: var(--font-mono); font-size: 20px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.05em; color: var(--muted); }
+td.r, th.r { text-align: right; font-family: var(--font-mono); }
+tr.hl td { background: var(--tint); font-weight: 600; }
+
+/* capa */
+.cover { background: var(--paper); }
+.cover::before {
+    content: "";
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 28px;
+    background: var(--accent);
+}
+.cover .meta {
+    position: absolute;
+    left: 112px;
+    top: 96px;
+    font-family: var(--font-mono);
+    font-size: 24px;
+    letter-spacing: 0.04em;
+    color: var(--muted);
+    text-transform: uppercase;
+}
+.cover h1 {
+    position: absolute;
+    left: 112px;
+    top: 290px;
+    width: 1500px;
+    font-size: 112px;
+    font-weight: 600;
+    line-height: 1.0;
+    letter-spacing: -0.035em;
+}
+.cover .sub {
+    position: absolute;
+    left: 112px;
+    top: 650px;
+    width: 1300px;
+    font-size: 36px;
+    line-height: 1.35;
+    color: var(--muted);
+}
+.cover .authors {
+    position: absolute;
+    left: 112px;
+    bottom: 96px;
+    font-size: 30px;
+    line-height: 1.5;
+}
+.cover .authors span { color: var(--muted); }
+.cover .date {
+    position: absolute;
+    right: 112px;
+    bottom: 96px;
+    text-align: right;
+    font-family: var(--font-mono);
+    font-size: 24px;
+    line-height: 1.6;
+    color: var(--muted);
+}
+
+/* grids */
+.two { display: grid; grid-template-columns: 1fr 1fr; gap: 80px; height: 100%; }
+.split { display: grid; grid-template-columns: 1120px 1fr; gap: 72px; height: 100%; align-items: start; }
+
+.task {
+    border: 1px solid var(--rule);
+    padding: 40px 44px;
+}
+.task .tag { font-family: var(--font-mono); font-size: 20px; letter-spacing: 0.05em; text-transform: uppercase; color: var(--accent); }
+.task h3 { margin-top: 14px; font-size: 44px; font-weight: 600; letter-spacing: -0.02em; line-height: 1.1; }
+.task p { margin-top: 16px; font-size: 28px; line-height: 1.4; color: var(--muted); }
+
+.cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 28px; }
+.card { border-top: 4px solid var(--accent); padding: 22px 4px 0; }
+.card h3 { font-size: 36px; font-weight: 600; letter-spacing: -0.015em; }
+.card p { margin-top: 12px; font-size: 26px; line-height: 1.38; color: var(--muted); }
+.card .num { color: var(--accent); }
+
+/* linha do tempo */
+.timeline { display: grid; grid-template-columns: repeat(13, 1fr); gap: 6px; margin-top: 30px; }
+.season {
+    height: 130px;
+    padding: 14px 10px;
+    font-family: var(--font-mono);
+    font-size: 21px;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    text-align: center;
+    border: 1px solid var(--accent);
+}
+.s-cluster { background: var(--accent-soft); border-color: var(--accent-soft); color: var(--ink); }
+.s-val { background: var(--accent); color: #fff; }
+.s-test { background: var(--ink); border-color: var(--ink); color: #fff; }
+.s-future { background: #fff; color: var(--muted); border-style: dashed; border-color: var(--muted); }
+.legend { display: grid; grid-template-columns: repeat(4, 1fr); gap: 28px; margin-top: 34px; }
+.legend h3 { font-size: 30px; font-weight: 600; margin-top: 12px; }
+.legend p { margin-top: 8px; font-size: 25px; line-height: 1.38; color: var(--muted); }
+.swatch { width: 100%; height: 14px; }
+
+/* dot plot */
+.dots { position: relative; margin-top: 10px; }
+.dot-row { display: grid; grid-template-columns: 420px 1fr 120px; align-items: center; height: 64px; font-size: 28px; }
+.dot-row .track { position: relative; height: 100%; border-left: 1px solid var(--rule); }
+.dot-row .track::after { content: ""; position: absolute; left: 0; right: 0; top: 50%; border-top: 1px solid var(--rule); }
+.dot-row .pt { position: absolute; top: 50%; width: 22px; height: 22px; margin: -11px 0 0 -11px; border-radius: 50%; background: var(--accent); z-index: 1; }
+.dot-row.ref .pt { background: #fff; border: 4px solid var(--ink); }
+.dot-row.final .pt { background: var(--ink); }
+.dot-row .v { text-align: right; font-family: var(--font-mono); font-size: 26px; }
+.axis { display: grid; grid-template-columns: 420px 1fr 120px; margin-top: 8px; font-family: var(--font-mono); font-size: 20px; color: var(--muted); }
+.axis .ticks { position: relative; height: 30px; }
+.axis .ticks span { position: absolute; transform: translateX(-50%); }
+
+.edit-hotzone, .edit-toggle { display: none; }
+</style>
+</head>
+<body>
+<div class="deck-viewport">
+<main class="deck-stage" id="deckStage">
+
+<section class="slide cover active">
+    <div class="meta reveal">UniSATC | Machine Learning | Avaliação 03</div>
+    <h1 class="reveal" style="--d:1">Previsão do resultado de partidas da Premier League</h1>
+    <p class="sub reveal" style="--d:2">Árvore de Decisão, Random Forest, XGBoost, SVM e K-Means aplicados a 12 temporadas de jogos.</p>
+    <div class="authors reveal" style="--d:3">
+        Thiago Dalló<br>Murilo Cambruzzi<br>Vinicius Fabris
+    </div>
+    <div class="date reveal" style="--d:3">Criciúma<br>13/11/2026</div>
+</section>
+
+<section class="slide">
+    <div class="slide-head">
+        <div class="kicker reveal">01 | Problema</div>
+        <h2 class="reveal" style="--d:1">Duas tarefas sobre o mesmo jogo: resultado e saldo de gols</h2>
+    </div>
+    <div class="slide-body">
+        <div class="two">
+            <div style="display:flex;flex-direction:column;gap:32px;">
+                <div class="task reveal" style="--d:2">
+                    <div class="tag">Classificação</div>
+                    <h3>Mandante, empate ou visitante</h3>
+                    <p>O modelo entrega uma probabilidade para cada resultado. A qualidade dessas probabilidades (log loss) pesa mais que o simples acerto.</p>
+                </div>
+                <div class="task reveal" style="--d:3">
+                    <div class="tag">Regressão</div>
+                    <h3>Saldo de gols da partida</h3>
+                    <p>Gols do mandante menos gols do visitante, comparado com a média do treino como régua.</p>
+                </div>
+            </div>
+            <div>
+                <div class="stat reveal" style="--d:2"><div class="num">4.180</div><div class="label">jogos de desenvolvimento, 2014/15 a 2024/25</div></div>
+                <div class="stat reveal" style="--d:3"><div class="num">380</div><div class="label">jogos de teste, temporada 2025/26, usados uma única vez</div></div>
+                <div class="stat reveal" style="--d:4"><div class="num">3</div><div class="label">classes de resultado: mandante, empate e visitante</div></div>
+            </div>
+        </div>
+    </div>
+    <div class="slide-foot"><span>Previsão de resultados da Premier League</span><span class="pg"></span></div>
+</section>
+
+<section class="slide">
+    <div class="slide-head">
+        <div class="kicker reveal">02 | Dados</div>
+        <h2 class="reveal" style="--d:1">Doze temporadas da Premier League com estatísticas por jogo</h2>
+    </div>
+    <div class="slide-body">
+        <div class="split">
+            <img class="fig reveal" style="--d:2" src="figs/eda_resultados_por_temporada.png" width="1120" alt="Resultados por temporada">
+            <ul class="list">
+                <li class="reveal" style="--d:2">Fonte: football-data.co.uk, 2014/15 a 2025/26</li>
+                <li class="reveal" style="--d:3">Gols, chutes, chutes no alvo, escanteios, faltas e cartões</li>
+                <li class="reveal" style="--d:4">Mandante vence 44,6%, empate 23,4%, visitante 32,0% (desenvolvimento)</li>
+                <li class="reveal" style="--d:5">Odds da Bet365 entram só como régua de comparação, nunca como variável</li>
+                <li class="reveal" style="--d:6">Brasileirão descartado: poucos jogos com estatísticas completas</li>
+            </ul>
+        </div>
+    </div>
+    <div class="slide-foot"><span>Previsão de resultados da Premier League</span><span class="pg"></span></div>
+</section>
+
+<section class="slide">
+    <div class="slide-head">
+        <div class="kicker reveal">03 | Variáveis</div>
+        <h2 class="reveal" style="--d:1">33 variáveis calculadas só com jogos que já aconteceram</h2>
+    </div>
+    <div class="slide-body">
+        <div class="cards" style="row-gap:44px;">
+            <div class="card reveal" style="--d:2"><h3>Rating Elo</h3><p>K = 20, vantagem do mandante de 65 pontos, time novo entra com 1450 e cada temporada devolve 25% da distância à média.</p></div>
+            <div class="card reveal" style="--d:3"><h3>Forma recente</h3><p>Média dos últimos 5 jogos em 12 estatísticas, deslocada em um jogo para não enxergar o próprio resultado.</p></div>
+            <div class="card reveal" style="--d:4"><h3>Estilo de jogo</h3><p>Média dos últimos 10 jogos (mínimo de 5) em 11 estatísticas. É a entrada do K-Means.</p></div>
+            <div class="card reveal" style="--d:5"><h3>Pontos por jogo</h3><p>Aproveitamento do time na temporada até a rodada anterior.</p></div>
+            <div class="card reveal" style="--d:6"><h3>Jogos disputados</h3><p>Quantos jogos o time já fez na temporada, para o modelo saber o peso do histórico.</p></div>
+            <div class="card reveal" style="--d:7"><h3>Descanso</h3><p>Dias desde a última partida de cada lado.</p></div>
+        </div>
+        <p class="small reveal" style="--d:8;margin-top:56px;"><span class="num" style="color:var(--accent)">33</span> variáveis base, mais <span class="num" style="color:var(--accent)">8</span> do K-Means (grupo do mandante e do visitante em one-hot) somam <span class="num" style="color:var(--accent)">41</span>.</p>
+    </div>
+    <div class="slide-foot"><span>Previsão de resultados da Premier League</span><span class="pg"></span></div>
+</section>
+
+<section class="slide">
+    <div class="slide-head">
+        <div class="kicker reveal">04 | Divisão dos dados</div>
+        <h2 class="reveal" style="--d:1">Divisão temporal: o modelo nunca treina com o futuro</h2>
+    </div>
+    <div class="slide-body">
+        <div class="timeline reveal" style="--d:2">
+            <div class="season s-cluster">14/15</div><div class="season s-cluster">15/16</div><div class="season s-cluster">16/17</div><div class="season s-cluster">17/18</div>
+            <div class="season s-val">18/19</div><div class="season s-val">19/20</div><div class="season s-val">20/21</div><div class="season s-val">21/22</div><div class="season s-val">22/23</div><div class="season s-val">23/24</div><div class="season s-val">24/25</div>
+            <div class="season s-test">25/26</div>
+            <div class="season s-future">26/27</div>
+        </div>
+        <div class="legend">
+            <div class="reveal" style="--d:3"><div class="swatch s-cluster"></div><h3>Agrupamento</h3><p>O K-Means é ajustado só em 2014/15 a 2017/18.</p></div>
+            <div class="reveal" style="--d:4"><div class="swatch s-val"></div><h3>Validação cruzada</h3><p>Janela crescente em 7 temporadas, de 2018/19 a 2024/25. Cada rodada valida na temporada seguinte ao treino.</p></div>
+            <div class="reveal" style="--d:5"><div class="swatch s-test"></div><h3>Teste</h3><p>2025/26, 380 jogos, avaliado uma vez, depois de escolhidos os modelos.</p></div>
+            <div class="reveal" style="--d:6"><div class="swatch s-future"></div><h3>Checagem extra</h3><p>2026/27 parcial, 100 jogos, fora de toda decisão.</p></div>
+        </div>
+    </div>
+    <div class="slide-foot"><span>Previsão de resultados da Premier League</span><span class="pg"></span></div>
+</section>
+
+<section class="slide">
+    <div class="slide-head">
+        <div class="kicker reveal">05 | K-Means</div>
+        <h2 class="reveal" style="--d:1">K-Means agrupa os times por estilo de jogo, em três grupos</h2>
+    </div>
+    <div class="slide-body">
+        <div class="split" style="grid-template-columns: 1000px 1fr;">
+            <div>
+                <img class="fig reveal" style="--d:2" src="figs/kmeans_selecao_k.png" width="1000" alt="Seleção do k">
+                <p class="small reveal" style="--d:3;margin-top:24px;">Padronização, PCA com 90% da variância (7 componentes) e k escolhido pela silhueta na faixa de 3 a 6. Silhueta de 0,17 indica grupos pouco separados.</p>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:26px;">
+                <div class="card reveal" style="--d:3"><h3>Grupo 1, ataque forte</h3><p><span class="num">2,02</span> gols marcados e <span class="num">0,95</span> sofridos por jogo, 656 perfis de time.</p></div>
+                <div class="card reveal" style="--d:4"><h3>Grupo 2, equilibrado</h3><p><span class="num">1,31</span> marcados e <span class="num">1,30</span> sofridos, 1.192 perfis.</p></div>
+                <div class="card reveal" style="--d:5"><h3>Grupo 0, defesa vulnerável</h3><p><span class="num">0,99</span> marcados e <span class="num">1,61</span> sofridos, 1.062 perfis.</p></div>
+            </div>
+        </div>
+    </div>
+    <div class="slide-foot"><span>Previsão de resultados da Premier League</span><span class="pg"></span></div>
+</section>
+
+<section class="slide">
+    <div class="slide-head">
+        <div class="kicker reveal">06 | Modelos</div>
+        <h2 class="reveal" style="--d:1">Cinco modelos, cada um com e sem o grupo do K-Means</h2>
+    </div>
+    <div class="slide-body">
+        <div class="two" style="grid-template-columns: 1fr 1fr;">
+            <table class="reveal" style="--d:2">
+                <tr><th>Modelo</th><th>Referência</th></tr>
+                <tr><td>Regressão Logística</td><td class="mono" style="font-size:24px;color:var(--muted)">base linear</td></tr>
+                <tr><td>Árvore de Decisão</td><td class="mono" style="font-size:24px;color:var(--muted)">árvore única</td></tr>
+                <tr><td>Random Forest</td><td class="mono" style="font-size:24px;color:var(--muted)">ensemble, bagging</td></tr>
+                <tr><td>XGBoost</td><td class="mono" style="font-size:24px;color:var(--muted)">ensemble, boosting</td></tr>
+                <tr><td>SVM (kernel RBF)</td><td class="mono" style="font-size:24px;color:var(--muted)">probabilidade calibrada</td></tr>
+            </table>
+            <ul class="list">
+                <li class="reveal" style="--d:3">Pipeline com imputação pela mediana e padronização, quando o modelo precisa</li>
+                <li class="reveal" style="--d:4">GridSearchCV minimizando log loss nas 7 rodadas temporais</li>
+                <li class="reveal" style="--d:5">SVM calibrado com sigmoide, para entregar probabilidades</li>
+                <li class="reveal" style="--d:6">Referências: frequências do treino, Só Elo e odds da Bet365</li>
+            </ul>
+        </div>
+    </div>
+    <div class="slide-foot"><span>Previsão de resultados da Premier League</span><span class="pg"></span></div>
+</section>
+
+<section class="slide">
+    <div class="slide-head">
+        <div class="kicker reveal">07 | Validação</div>
+        <h2 class="reveal" style="--d:1">Na validação, a Regressão Logística fica a 0,002 do Só Elo</h2>
+    </div>
+    <div class="slide-body">
+        <div class="dots">
+            <div class="dot-row ref reveal" style="--d:2"><span>Odds Bet365 (referência)</span><div class="track"><div class="pt" style="left:7.9%"></div></div><span class="v">0,951</span></div>
+            <div class="dot-row ref reveal" style="--d:3"><span>Só Elo (referência)</span><div class="track"><div class="pt" style="left:20.7%"></div></div><span class="v">0,969</span></div>
+            <div class="dot-row final reveal" style="--d:4"><span><b>Regressão Logística</b></span><div class="track"><div class="pt" style="left:22.1%"></div></div><span class="v">0,971</span></div>
+            <div class="dot-row reveal" style="--d:5"><span>Random Forest</span><div class="track"><div class="pt" style="left:24.3%"></div></div><span class="v">0,974</span></div>
+            <div class="dot-row reveal" style="--d:6"><span>XGBoost</span><div class="track"><div class="pt" style="left:25.7%"></div></div><span class="v">0,976</span></div>
+            <div class="dot-row reveal" style="--d:7"><span>Árvore de Decisão</span><div class="track"><div class="pt" style="left:32.1%"></div></div><span class="v">0,985</span></div>
+            <div class="dot-row reveal" style="--d:8"><span>SVM (RBF)</span><div class="track"><div class="pt" style="left:32.1%"></div></div><span class="v">0,985</span></div>
+            <div class="dot-row ref reveal" style="--d:9"><span>Frequências do treino</span><div class="track"><div class="pt" style="left:89.3%"></div></div><span class="v">1,065</span></div>
+            <div class="axis"><span></span><div class="ticks"><span style="left:0%">0,94</span><span style="left:28.6%">0,98</span><span style="left:57.1%">1,02</span><span style="left:85.7%">1,06</span></div><span></span></div>
+        </div>
+        <p class="small reveal" style="--d:10;margin-top:26px;">Log loss médio nas 7 rodadas temporais, versões sem K-Means. Menor é melhor. O eixo começa em 0,94.</p>
+    </div>
+    <div class="slide-foot"><span>Previsão de resultados da Premier League</span><span class="pg"></span></div>
+</section>
+
+<section class="slide">
+    <div class="slide-head">
+        <div class="kicker reveal">08 | Efeito do K-Means</div>
+        <h2 class="reveal" style="--d:1">O grupo de estilo não trouxe ganho consistente</h2>
+    </div>
+    <div class="slide-body">
+        <div class="split" style="grid-template-columns: 1060px 1fr;">
+            <img class="fig reveal" style="--d:2" src="figs/classificacao_log_loss_teste.png" width="1060" alt="Teste com e sem K-Means">
+            <ul class="list">
+                <li class="reveal" style="--d:3">Validação: diferença de até 0,001 em log loss, nos dois sentidos</li>
+                <li class="reveal" style="--d:4">Teste: melhora ou empata em quase todos os modelos, até 0,005 no SVM</li>
+                <li class="reveal" style="--d:5">Nenhuma versão com K-Means passa a referência Só Elo</li>
+                <li class="reveal" style="--d:6">Modelo final escolhido pela validação: Regressão Logística sem K-Means</li>
+            </ul>
+        </div>
+    </div>
+    <div class="slide-foot"><span>Previsão de resultados da Premier League</span><span class="pg"></span></div>
+</section>
+
+<section class="slide">
+    <div class="slide-head">
+        <div class="kicker reveal">09 | Teste</div>
+        <h2 class="reveal" style="--d:1">No teste de 2025/26, ficamos atrás do Elo e das odds</h2>
+    </div>
+    <div class="slide-body">
+        <div class="two" style="grid-template-columns: 820px 1fr; gap:72px;">
+            <div>
+                <table class="reveal" style="--d:2">
+                    <tr><th>Modelo</th><th class="r">Log loss</th></tr>
+                    <tr><td>Odds Bet365</td><td class="r">1,0185</td></tr>
+                    <tr><td>Só Elo</td><td class="r">1,0262</td></tr>
+                    <tr class="hl"><td>Regressão Logística</td><td class="r">1,0366</td></tr>
+                    <tr><td>Frequências do treino</td><td class="r">1,0835</td></tr>
+                </table>
+                <p class="small reveal" style="--d:3;margin-top:28px;">Checagem em 2026/27 (100 jogos): odds 1,012, Só Elo 1,025, modelo final 1,030. Mesma ordem.</p>
+            </div>
+            <div>
+                <img class="fig reveal" style="--d:3" src="figs/classificacao_bootstrap.png" width="940" alt="Bootstrap pareado">
+                <ul class="list" style="margin-top:28px;">
+                    <li class="reveal" style="--d:4">Contra o Só Elo: <span class="num">+0,0104</span>, intervalo de −0,0034 a 0,0242 (inclui zero)</li>
+                    <li class="reveal" style="--d:5">Contra as odds: <span class="num">+0,0181</span>, intervalo de 0,0015 a 0,0350</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="slide-foot"><span>Previsão de resultados da Premier League</span><span class="pg"></span></div>
+</section>
+
+<section class="slide">
+    <div class="slide-head">
+        <div class="kicker reveal">10 | Empate</div>
+        <h2 class="reveal" style="--d:1">O empate é o resultado que nenhum modelo consegue prever</h2>
+    </div>
+    <div class="slide-body">
+        <div class="split" style="grid-template-columns: 820px 1fr;">
+            <img class="fig reveal" style="--d:2" src="figs/classificacao_roc.png" width="820" alt="Curvas ROC">
+            <div>
+                <div class="stat reveal" style="--d:3"><div class="num">0</div><div class="label">recall do empate: o modelo nunca aponta empate como resultado mais provável</div></div>
+                <div class="stat reveal" style="--d:4"><div class="num">0,52</div><div class="label">AUC do empate, quase um sorteio</div></div>
+                <div class="stat reveal" style="--d:5"><div class="num">0,66 | 0,65</div><div class="label">AUC do mandante e do visitante</div></div>
+            </div>
+        </div>
+    </div>
+    <div class="slide-foot"><span>Previsão de resultados da Premier League</span><span class="pg"></span></div>
+</section>
+
+<section class="slide">
+    <div class="slide-head">
+        <div class="kicker reveal">11 | Regressão</div>
+        <h2 class="reveal" style="--d:1">Saldo de gols: erro de 1,53 contra 1,62 da média, R² perto de 0,10</h2>
+    </div>
+    <div class="slide-body">
+        <div class="split" style="grid-template-columns: 1080px 1fr;">
+            <img class="fig reveal" style="--d:2" src="figs/regressao_comparacao.png" width="1080" alt="Comparação de regressores">
+            <div>
+                <div class="stat reveal" style="--d:3"><div class="num">≈ 1,53</div><div class="label">RMSE no teste, contra 1,618 de quem prevê sempre a média</div></div>
+                <div class="stat reveal" style="--d:4"><div class="num">≈ 0,10</div><div class="label">R² no teste: só uma parte pequena do saldo é explicada</div></div>
+                <p class="small reveal" style="--d:5;margin-top:10px;">Final pela validação: SVR sem K-Means (C = 10, gamma = 0,0003).</p>
+            </div>
+        </div>
+    </div>
+    <div class="slide-foot"><span>Previsão de resultados da Premier League</span><span class="pg"></span></div>
+</section>
+
+<section class="slide">
+    <div class="slide-head">
+        <div class="kicker reveal">12 | Conclusão</div>
+        <h2 class="reveal" style="--d:1">O modelo simples supera a base, mas não o Elo nem as odds</h2>
+    </div>
+    <div class="slide-body">
+        <div class="two">
+            <div>
+                <div class="kicker reveal" style="--d:2;color:var(--ink)">O que ficou</div>
+                <ul class="list" style="margin-top:14px;">
+                    <li class="reveal" style="--d:3">Probabilidades bem melhores que a base de frequências</li>
+                    <li class="reveal" style="--d:4">Modelos mais complexos não superaram a Regressão Logística</li>
+                    <li class="reveal" style="--d:5">Futebol tem muito ruído: o empate segue imprevisível</li>
+                    <li class="reveal" style="--d:6">Todas as variáveis vêm só do passado, e as odds ainda ficam à frente por pouco</li>
+                </ul>
+            </div>
+            <div>
+                <div class="kicker reveal" style="--d:2;color:var(--ink)">Limitações</div>
+                <ul class="list" style="margin-top:14px;">
+                    <li class="reveal" style="--d:3">Teste com 380 jogos: intervalos largos</li>
+                    <li class="reveal" style="--d:4">Silhueta de 0,17: grupos de estilo pouco separados</li>
+                    <li class="reveal" style="--d:5">Hiperparâmetros ainda na borda da grade após duas ampliações</li>
+                    <li class="reveal" style="--d:6">Só uma liga e sem dados de elenco, lesões ou escalações</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="slide-foot"><span>Previsão de resultados da Premier League</span><span class="pg"></span></div>
+</section>
+
+</main>
+</div>
+
+<script>
+class SlidePresentation {
+    constructor() {
+        this.slides = Array.from(document.querySelectorAll('.slide'));
+        this.stage = document.getElementById('deckStage');
+        this.current = 0;
+        this.numberSlides();
+        this.setupScale();
+        this.setupInput();
+        const start = parseInt(location.hash.replace('#', ''), 10);
+        this.show(Number.isFinite(start) ? start - 1 : 0);
+    }
+
+    numberSlides() {
+        const total = this.slides.length;
+        this.slides.forEach((slide, i) => {
+            const pg = slide.querySelector('.pg');
+            if (pg) pg.textContent = `${i + 1} / ${total}`;
+        });
+    }
+
+    setupScale() {
+        const fit = () => {
+            const factor = Math.min(window.innerWidth / 1920, window.innerHeight / 1080);
+            const x = (window.innerWidth - 1920 * factor) / 2;
+            const y = (window.innerHeight - 1080 * factor) / 2;
+            this.stage.style.transform = `translate(${x}px, ${y}px) scale(${factor})`;
+        };
+        fit();
+        window.addEventListener('resize', fit);
+    }
+
+    setupInput() {
+        document.addEventListener('keydown', (event) => {
+            if (['ArrowRight', 'ArrowDown', 'PageDown', ' '].includes(event.key)) { event.preventDefault(); this.show(this.current + 1); }
+            if (['ArrowLeft', 'ArrowUp', 'PageUp'].includes(event.key)) { event.preventDefault(); this.show(this.current - 1); }
+            if (event.key === 'Home') this.show(0);
+            if (event.key === 'End') this.show(this.slides.length - 1);
+        });
+        let wheel_lock = false;
+        document.addEventListener('wheel', (event) => {
+            if (wheel_lock) return;
+            wheel_lock = true;
+            setTimeout(() => { wheel_lock = false; }, 500);
+            this.show(this.current + (event.deltaY > 0 ? 1 : -1));
+        }, { passive: true });
+        let touch_x = 0;
+        document.addEventListener('touchstart', (event) => { touch_x = event.touches[0].clientX; }, { passive: true });
+        document.addEventListener('touchend', (event) => {
+            const delta = event.changedTouches[0].clientX - touch_x;
+            if (Math.abs(delta) > 50) this.show(this.current + (delta < 0 ? 1 : -1));
+        }, { passive: true });
+    }
+
+    show(index) {
+        this.current = Math.max(0, Math.min(index, this.slides.length - 1));
+        this.slides.forEach((slide, i) => {
+            slide.classList.toggle('active', i === this.current);
+            slide.classList.toggle('visible', i === this.current);
+        });
+        history.replaceState(null, '', `#${this.current + 1}`);
+    }
+}
+new SlidePresentation();
+</script>
+</body>
+</html>
